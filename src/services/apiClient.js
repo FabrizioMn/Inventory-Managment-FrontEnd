@@ -8,16 +8,12 @@ export async function apiClient(endpoint, options = {}) {
     ...options.header,
   };
 
-  try {
-    const response = await fetch(url, { ...options, headers: defaultHeader });
+  const response = await fetch(url, { ...options, headers: defaultHeader });
 
-    if (!response.ok) {
-      throw new Error(
-        `Error HTTP: ${response.status} - ${response.statusText}`,
-      );
-    }
-    return await response.json();
-  } catch (e) {
-    console.error("Error en la peticion:", e);
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || "Ocurrio un error en el servidor");
   }
+  
+  return await response.json();
 }
