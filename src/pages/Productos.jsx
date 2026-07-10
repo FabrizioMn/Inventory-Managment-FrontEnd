@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { categoriaService } from "../services/categoriaService";
 import { productoService } from "../services/productoService";
+import Swal from "sweetalert2";
 
 function Productos() {
   const [sku, setSku] = useState("");
@@ -41,23 +42,44 @@ function Productos() {
 
   const handleForm = async (e) => {
     e.preventDefault();
-
     if (!sku.trim()) {
-      alert("El campo SKU / CÓDIGO es obligatorio");
+      Swal.fire({
+        icon: "warning",
+        title: "Campo obligatorio",
+        text: "El campo SKU / CÓDIGO es requerido para registrar el producto.",
+        confirmButtonColor: "#008674",
+      });
       return;
     }
+
     if (!nombre.trim()) {
-      alert("El Nombre del Producto es obligatorio");
-      return;
-    }
-    if (!categoria) {
-      alert("Debe seleccionar una Categoría válida");
+      Swal.fire({
+        icon: "warning",
+        title: "Nombre ausente",
+        text: "El Nombre del Producto es obligatorio.",
+        confirmButtonColor: "#008674",
+      });
       return;
     }
 
     const precioNumerico = parseFloat(precio);
     if (isNaN(precioNumerico) || precioNumerico <= 0) {
-      alert("Por favor, ingrese un precio válido y mayor a S/. 0.00");
+      Swal.fire({
+        icon: "error",
+        title: "Precio inválido",
+        text: "Por favor, ingrese un precio válido y mayor a S/. 0.00",
+        confirmButtonColor: "#008674",
+      });
+      return;
+    }
+
+    if (!categoria) {
+      Swal.fire({
+        icon: "warning",
+        title: "Campo obligatorio",
+        text: "Debe seleccionar una categoria",
+        confirmButtonColor: "#008674",
+      });
       return;
     }
 
@@ -78,7 +100,12 @@ function Productos() {
       setDescripcion("");
       setPrecio("");
       setCategoria("");
-      alert("¡Producto creado exitosamente!")
+      Swal.fire({
+        title: "¡Exito!",
+        text: "Producto creado exitosamente",
+        icon: "success",
+        color: "#008674",
+      });
     } catch (e) {
       console.error("ERROR", e);
       alert(e.message || "No se pudo crear el producto");
@@ -93,23 +120,31 @@ function Productos() {
   };
 
   const eliminarProducto = async (id, nombreProducto) => {
-    const confirmar = window.confirm(
-      `¿Estas seguro que deseas eliminar el producto "${nombreProducto}"?`,
-    );
-    if (!confirmar) return;
+    const resultado = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: `Vas a eliminar el producto "${nombreProducto}"`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Si, eliminar",
+      cancelButtonText: "Cancelar",
+    });
 
-    try {
-      await productoService.delete(id);
-      setProductos((prevProductos) =>
-        prevProductos.filter((prod) => prod.id_producto !== id),
-      );
-      alert("¡Producto eliminado exitosamente!");
-    } catch (e) {
-      console.error("Error al eliminar:", e);
-      alert(e.message || "Ocurrió un error al intentar eliminar el producto");
+    if (resultado.isConfirmed) {
+      try {
+        await productoService.delete(id);
+        setProductos((prevProductos) =>
+          prevProductos.filter((prod) => prod.id_producto !== id),
+        );
+        Swal.fire("¡Eliminado!", "El producto ha sido borrado", "success");
+      } catch (e) {
+        console.error("Error al eliminar:", e);
+        alert(e.message || "Ocurrió un error al intentar eliminar el producto");
+      }
     }
   };
-  
+
   return (
     <section className="min-h-screen flex flex-col bg-slate-100">
       <header className="bg-white min-h-24 flex items-center px-8 shadow-md">
