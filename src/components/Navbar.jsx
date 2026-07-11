@@ -79,6 +79,20 @@ function Navbar() {
         </li>
         <li>
           <NavLink
+            to="/historial-ventas"
+            className={({ isActive }) =>
+              `flex px-5 py-3 text-lg rounded-lg font-medium hover:bg-white/40 ${
+                isActive
+                  ? "bg-white text-black font-bold shadow-md"
+                  : "text-slate-100 font-normal"
+              }`
+            }
+          >
+            Historial de Ventas
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
             to="/movimientos"
             className={({ isActive }) =>
               `flex px-5 py-3 text-lg rounded-lg font-medium hover:bg-white/40 ${

@@ -6,6 +6,7 @@ import Categorias from "./pages/Categorias";
 import Movimientos from "./pages/Movimientos";
 import Proveedores from "./pages/Proveedores";
 import Navbar from "./components/Navbar";
+import HistorialVentas from "./pages/HistorialVentas";
 function App() {
   return (
     <div>
@@ -19,6 +20,7 @@ function App() {
               <Route path="/productos" element={<Productos />} />
               <Route path="/proveedores" element={<Proveedores />} />
               <Route path="/ventas" element={<Ventas />} />
+              <Route path="/historial-ventas" element={<HistorialVentas />} />
               <Route path="/movimientos" element={<Movimientos />} />
             </Routes>
           </div>
