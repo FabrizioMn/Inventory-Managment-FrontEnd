@@ -21,7 +21,7 @@ function HistorialVentas() {
     async function iniciarCarga() {
       try {
         const data = await transaccionService.getHistorialVentas();
-        const dataProductos = await productoService.getAll();
+        const dataProductos = await productoService.getAll(false);
         if (activo) {
           setHistorial(data);
           setListaProductos(dataProductos);
