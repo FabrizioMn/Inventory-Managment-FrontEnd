@@ -18,7 +18,7 @@ function Ventas() {
     const resultado = listaCategorias.find(
       (cat) => cat.id_categoria === parseInt(id),
     );
-    return resultado ? resultado.nombre : "Sin Categoria";
+    return resultado ? resultado.nombre : "Sin Categoría";
   };
 
   useEffect(() => {
@@ -27,17 +27,19 @@ function Ventas() {
     async function inciarCarga() {
       try {
         if (recargarDatos > 0) setLoading(true);
-        const dataCategoria = await categoriaService.getAll();
+        const dataCategoria = await categoriaService.getAll(false);
         const dataProductos = await productoService.getAll();
         if (activo) {
           setListaCategorias(dataCategoria);
           setListaProductos(dataProductos);
+          setError(null);
         }
       } catch (e) {
         console.error("Error", e);
-        setError("No se pudieron cargar los productos");
+        if (activo)
+          setError("No se pudieron cargar los productos en este momento.");
       } finally {
-        setLoading(false);
+        if (activo) setLoading(false);
       }
     }
 
@@ -130,7 +132,7 @@ function Ventas() {
       Swal.fire({
         icon: "success",
         title: "¡Venta Realizada!",
-        text: "La transaccion se ha guardado y el stock fue actualizado",
+        text: "La transacción se ha guardado y el stock fue actualizado",
         confirmButtonColor: "#008674",
       });
       setCarrito([]);
@@ -162,25 +164,25 @@ function Ventas() {
     <section className="min-h-screen flex flex-col bg-slate-100">
       <header className="bg-white min-h-24 flex items-center px-8 shadow-md">
         <h1 className="text-3xl text-[#3d4946] font-medium tracking-tight">
-          Gestion de Ventas
+          Gestión de Ventas
         </h1>
       </header>
 
       <main className="flex-1 flex justify-center">
-        {/*SECCION CATALOGO*/}
+        {/* SECCIÓN CATÁLOGO */}
         <div className="p-4 flex-2 items-center justify-start">
-          {/*CABECERA*/}
+          {/* CABECERA */}
           <div className="mb-5 flex flex-col gap-4">
-            {/*TITULO*/}
+            {/* TÍTULO */}
             <div>
               <h2 className="text-4xl font-bold text-black">
-                Catalogo de Productos
+                Catálogo de Productos
               </h2>
               <p className="text-md text-slate-500 mt-1 pl-0.5">
                 Selecciona los productos para añadirlos a la venta
               </p>
             </div>
-            {/*BUSCAOOR*/}
+            {/* BUSCADOR */}
             <div className="w-full sm:max-w-xl">
               <input
                 type="text"
@@ -192,8 +194,7 @@ function Ventas() {
             </div>
           </div>
 
-          {/*Catalogo de Productos*/}
-
+          {/* Catálogo de Productos */}
           <div className="flex flex-col gap-3 max-h-[60vh] overflow-y-auto pr-1 custom-scrollbar">
             {loading ? (
               <div className="p-12 text-center text-slate-500 font-medium bg-white rounded-xl shadow-sm border border-slate-200">
@@ -294,7 +295,7 @@ function Ventas() {
             </span>
           </div>
 
-          {/*LISTADO DE PRODUCTOS A COMPRAR*/}
+          {/* LISTADO DE PRODUCTOS A VENDER */}
           <div className="flex-4 overflow-y-auto p-4 flex flex-col gap-3 bg-slate-50/50 custom-scrollbar">
             {carrito.length === 0 ? (
               <div className="flex-1 flex flex-col items-center justify-center text-slate-400 p-8 text-center gap-2">
@@ -334,7 +335,7 @@ function Ventas() {
                           ),
                         )
                       }
-                      className="text-slate-300 hover:text-red-500 p-1 transition-colors"
+                      className="text-slate-300 hover:text-red-500 p-1 transition-colors cursor-pointer"
                     >
                       ✕
                     </button>
@@ -342,13 +343,10 @@ function Ventas() {
                 </div>
               ))
             )}
-
-            {/* Aquí irá luego el .map() de tus productos seleccionados en la compra */}
           </div>
 
-          {/* Resumen*/}
+          {/* Resumen */}
           <div className="flex-1 border-t border-slate-200 p-5 bg-white flex flex-col gap-4 shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
-            {/* Desglose de Totales */}
             <div className="flex flex-col gap-2.5">
               <div className="flex justify-between items-center text-sm text-slate-500">
                 <span>Subtotal</span>
