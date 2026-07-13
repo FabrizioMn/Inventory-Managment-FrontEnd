@@ -86,7 +86,7 @@ function HistorialVentas() {
                       {formatearFecha(venta.created_at)}
                     </span>
                     <span className="block text-xs text-slate-500 mt-0.5">
-                      Atendido por Usuario ID:{" "}
+                      Atendido por Usuario ID:{" "}a
                       <strong>{venta.id_usuario}</strong>
                     </span>
                   </div>

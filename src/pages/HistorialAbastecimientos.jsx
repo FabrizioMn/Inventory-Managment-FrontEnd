@@ -130,7 +130,7 @@ function HistorialAbastecimientos() {
         {loading ? (
           <div className="p-10 text-center text-slate-500 font-medium bg-white rounded-xl shadow-sm">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#008674] mx-auto mb-4"></div>
-            Cargando historial de entradas...
+            Cargando historial de movimientos...
           </div>
         ) : error ? (
           <div className="p-10 text-center text-red-500 font-medium bg-white rounded-xl shadow-sm border border-red-100">
