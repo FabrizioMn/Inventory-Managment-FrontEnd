@@ -79,11 +79,12 @@ function Categorias() {
 
       setRecargarDatos((prev) => prev + 1);
     } catch (e) {
-      console.error("Error", e);
+      console.error("ERROR", e);
       Swal.fire({
         icon: "error",
-        title: "Error",
-        text: "No se pudo crear la categoría.",
+        title: "Error de registro",
+        text:
+          e.message || "No se pudo crear la categoria. Verifique duplicados.",
         confirmButtonColor: "#d33",
       });
     }
