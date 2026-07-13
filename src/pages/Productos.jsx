@@ -176,6 +176,7 @@ function Productos() {
   };
 
   const categoriasActivas = listaCategorias.filter((cat) => cat.activo);
+  const productosActivos = productos.filter((prod) => prod.activo);
 
   return (
     <section className="min-h-screen flex flex-col bg-slate-100">
@@ -274,7 +275,7 @@ function Productos() {
               Listado de Productos
             </h2>
             <span className="text-sm bg-[#008674]/10 text-[#008674] font-bold px-3 py-1 rounded-full">
-              {productos.length} productos
+              {productosActivos.length} productos
             </span>
           </div>
 
@@ -288,7 +289,7 @@ function Productos() {
               <div className="p-10 text-center text-red-500 font-medium">
                 {error}
               </div>
-            ) : productos.length === 0 ? (
+            ) : productosActivos.length === 0 ? (
               <div className="p-10 text-center text-slate-800 italic">
                 No hay productos registradas
               </div>
@@ -305,7 +306,7 @@ function Productos() {
                   </tr>
                 </thead>
                 <tbody>
-                  {productos.map((prod, index) => (
+                  {productosActivos.map((prod, index) => (
                     <tr
                       key={prod.id_producto || prod.sku || index}
                       className="hover:bg-slate-50/80 transition-colors duration-150"
