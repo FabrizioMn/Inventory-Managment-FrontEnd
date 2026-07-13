@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { proveedorService } from "../services/proveedorService";
+import Swal from "sweetalert2";
 
 function Proveedores() {
   const [proveedores, setProveedores] = useState([]);
@@ -8,21 +9,22 @@ function Proveedores() {
   const [telf, setTelf] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [recargarDatos, setRecargarDatos] = useState(0);
 
   useEffect(() => {
     let activo = true;
     async function iniciarCarga() {
       try {
-        const data = await proveedorService.getAll();
+        if (recargarDatos > 0) setLoading(true);
+        const data = await proveedorService.getAll(false);
         if (activo) {
           setProveedores(data);
           setError(null);
-          console.log(data);
         }
       } catch (e) {
         if (activo) {
           setError("No se pudieron cargar los proveedores");
-          console.log("Error:", e);
+          console.error("Error:", e);
         }
       } finally {
         if (activo) setLoading(false);
@@ -34,7 +36,7 @@ function Proveedores() {
     return () => {
       activo = false;
     };
-  }, []);
+  }, [recargarDatos]);
 
   const handleForm = async (e) => {
     e.preventDefault();
@@ -43,33 +45,102 @@ function Proveedores() {
     const razonLimpia = rznSocial.trim();
 
     if (!rucLimpio || rucLimpio.length !== 11 || isNaN(rucLimpio)) {
-      alert("El RUC es obligatorio y debe tener exactamente 11 números");
+      Swal.fire({
+        icon: "warning",
+        title: "RUC Inválido",
+        text: "El RUC es obligatorio y debe tener exactamente 11 dígitos numericos",
+        confirmButtonColor: "#008674",
+      });
       return;
     }
 
     if (!razonLimpia) {
-      alert("La Razón Social es obligatoria");
+      Swal.fire({
+        icon: "warning",
+        title: "Campo obligatorio",
+        text: "La Razon Social es obligatoria",
+        confirmButtonColor: "#008674",
+      });
       return;
     }
 
     const object = {
       ruc: rucLimpio,
       razon_social: razonLimpia,
-      telefono: telf,
+      telefono: telf.trim(),
     };
 
     try {
-      const nuevoProvee = await proveedorService.create(object);
-      setProveedores((prev) => [nuevoProvee, ...prev]);
+      Swal.fire({
+        title: "Guardando proveedor...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+      });
+
+      await proveedorService.create(object);
+
       setRuc("");
       setRznSocial("");
       setTelf("");
-      alert("¡Proveedor creado con exito!");
+
+      Swal.fire({
+        icon: "success",
+        title: "¡Éxito!",
+        text: "Proveedor registrado correctamente.",
+        confirmButtonColor: "#008674",
+        timer: 1500,
+      });
+
+      setRecargarDatos((prev) => prev + 1);
     } catch (e) {
       console.error("Error", e);
-      alert(e.message || "No se pudo registrar el proveedor.");
+      Swal.fire({
+        icon: "error",
+        title: "Error de registro",
+        text:
+          e.message ||
+          "No se pudo registrar el proveedor. Verifique que el RUC no esté duplicado.",
+        confirmButtonColor: "#d33",
+      });
     }
   };
+
+  const handleEliminar = async (id, razonSocial) => {
+    const result = await Swal.fire({
+      title: `¿Desactivar a ${razonSocial}?`,
+      text: "Ya no se podrán registrar nuevas órdenes de abastecimiento con este proveedor.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#bcc9c5",
+      confirmButtonText: "Sí, desactivar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await proveedorService.delete(id);
+        Swal.fire({
+          icon: "success",
+          title: "Desactivado",
+          text: "El proveedor ha sido dado de baja.",
+          confirmButtonColor: "#008674",
+          timer: 1500,
+        });
+        setRecargarDatos((prev) => prev + 1);
+      } catch (e) {
+        console.error(e);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo cambiar el estado del proveedor.",
+          confirmButtonColor: "#d33",
+        });
+      }
+    }
+  };
+
+  const proveedoresActivos = proveedores.filter((prov) => prov.activo);
 
   return (
     <section className="min-h-screen flex flex-col bg-slate-100">
@@ -135,7 +206,7 @@ function Proveedores() {
               Listado de Proveedores
             </h2>
             <span className="text-sm bg-[#008674]/10 text-[#008674] font-bold px-3 py-1 rounded-full">
-              {proveedores.length} proveedores
+              {proveedoresActivos.length} proveedores
             </span>
           </div>
 
@@ -149,7 +220,7 @@ function Proveedores() {
               <div className="p-10 text-center text-red-500 font-medium">
                 {error}
               </div>
-            ) : proveedores.length === 0 ? (
+            ) : proveedoresActivos.length === 0 ? (
               <div className="p-10 text-center text-slate-800 italic">
                 No hay proveedores registrados
               </div>
@@ -163,10 +234,11 @@ function Proveedores() {
                     <th className="py-4 px-6 w-44 text-center">
                       Fecha Creacion
                     </th>
+                    <th className="py-4 px-6 w-44 text-center">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {proveedores.map((prov) => (
+                  {proveedoresActivos.map((prov) => (
                     <tr
                       key={prov.id_proveedor}
                       className="hover:bg-slate-50/80 transition-colors duration-150"
@@ -186,6 +258,31 @@ function Proveedores() {
                           month: "short",
                           day: "numeric",
                         })}
+                      </td>
+
+                      <td className="py-4 px-6 text-center whitespace-nowrap">
+                        <button
+                          onClick={() =>
+                            handleEliminar(prov.id_proveedor, prov.razon_social)
+                          }
+                          className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 border border-slate-200 rounded-lg transition-all active:scale-95 cursor-pointer"
+                          title="Desactivar proveedor"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={2}
+                            stroke="currentColor"
+                            className="w-4 h-4"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                            />
+                          </svg>
+                        </button>
                       </td>
                     </tr>
                   ))}
