@@ -21,8 +21,8 @@ function Productos() {
     async function iniciarCarga() {
       try {
         if (recargarDatos > 0) setLoading(true);
-        const dataCategoria = await categoriaService.getAll();
-        const dataProductos = await productoService.getAll();
+        const dataCategoria = await categoriaService.getAll(false);
+        const dataProductos = await productoService.getAll(false);
 
         if (activo) {
           setListaCategorias(dataCategoria);
@@ -175,6 +175,8 @@ function Productos() {
     }
   };
 
+  const categoriasActivas = listaCategorias.filter((cat) => cat.activo);
+
   return (
     <section className="min-h-screen flex flex-col bg-slate-100">
       <header className="bg-white min-h-24 flex items-center px-8 shadow-md">
@@ -221,7 +223,7 @@ function Productos() {
                   onChange={(e) => setCategoria(e.target.value)}
                 >
                   <option value="">Seleccione una categoria</option>
-                  {listaCategorias.map((cat) => (
+                  {categoriasActivas.map((cat) => (
                     <option key={cat.id_categoria} value={cat.id_categoria}>
                       {cat.nombre}
                     </option>
