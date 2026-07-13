@@ -17,9 +17,9 @@ function HistorialAbastecimientos() {
     async function iniciarCarga() {
       try {
         const data = await transaccionService.getHistorialAbastecimientos();
-        const dataProductos = await productoService.getAll();
-        const dataProveedores = await proveedorService.getAll();
-        const dataCategorias = await categoriaService.getAll();
+        const dataProductos = await productoService.getAll(false);
+        const dataProveedores = await proveedorService.getAll(false);
+        const dataCategorias = await categoriaService.getAll(false);
         if (activo) {
           setHistorial(data);
           setListaProductos(dataProductos);
@@ -101,6 +101,26 @@ function HistorialAbastecimientos() {
     }).length;
   };
 
+  const obtenerProductoMasMovido = () => {
+    if (historial.length === 0) return "Ninguno";
+
+    const conteoProductos = {};
+    let maxId = null;
+    let maxConteo = 0;
+
+    historial.forEach((abast) => {
+      const id = abast.id_producto;
+      conteoProductos[id] = (conteoProductos[id] || 0) + 1;
+
+      if (conteoProductos[id] > maxConteo) {
+        maxConteo = conteoProductos[id];
+        maxId = id;
+      }
+    });
+
+    return maxId ? obtenerNombreProducto(maxId) : "Ninguno";
+  };
+
   return (
     <section className="min-h-screen flex flex-col bg-slate-100">
       <header className="bg-white min-h-24 flex items-center px-8 shadow-md">
@@ -123,7 +143,9 @@ function HistorialAbastecimientos() {
             <span className="text-md font-medium text-black uppercase tracking-wider text-left">
               Producto mas movido
             </span>
-            <h2 className="text-5xl font-light">0</h2>
+            <h2 className="text-4xl font-light">
+              {obtenerProductoMasMovido()}
+            </h2>
           </div>
         </div>
 
@@ -153,7 +175,7 @@ function HistorialAbastecimientos() {
                       Producto
                     </th>
                     <th className="p-4 text-xs font-semibold uppercase tracking-wider text-center">
-                      Tipo
+                      Categoria
                     </th>
                     <th className="p-4 text-xs font-semibold uppercase tracking-wider text-center">
                       Proveedor
