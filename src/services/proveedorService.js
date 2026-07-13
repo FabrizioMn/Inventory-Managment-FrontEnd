@@ -1,14 +1,20 @@
 import { apiClient } from "./apiClient";
 
 export const proveedorService = {
-  getAll: async () => {
-    return await apiClient("/proveedores/");
+  getAll: async (soloActivos = true) => {
+    return await apiClient(`/proveedores/?solo_activos=${soloActivos}`);
   },
 
-  create: async (productoData) => {
+  create: async (proveedorData) => {
     return await apiClient("/proveedores/", {
       method: "POST",
-      body: JSON.stringify(productoData),
+      body: JSON.stringify(proveedorData),
+    });
+  },
+
+  delete: async (id_proveedor) => {
+    return await apiClient(`/proveedores/${id_proveedor}`, {
+      method: "DELETE",
     });
   },
 };

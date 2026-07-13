@@ -1,8 +1,8 @@
 import { apiClient } from "./apiClient";
 
 export const productoService = {
-  getAll: async () => {
-    return await apiClient("/productos/");
+  getAll: async (soloActivos = true) => {
+    return await apiClient(`/productos/?solo_activos=${soloActivos}`);
   },
 
   create: async (productoData) => {
@@ -12,9 +12,9 @@ export const productoService = {
     });
   },
 
-  delete: async(id_producto)=>{
-    return await apiClient(`/productos/${id_producto}`,{
-      method:"DELETE"
+  delete: async (id_producto) => {
+    return await apiClient(`/productos/${id_producto}`, {
+      method: "DELETE",
     });
-  }
+  },
 };
