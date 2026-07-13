@@ -247,7 +247,7 @@ function Productos() {
           </div>
 
           {/*TABLA*/}
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto max-h-120 overflow-y-auto custom-scrollbar">
             {loading ? (
               <div className="p-10 text-center text-slate-800 font-medium">
                 Cargando productos...
@@ -263,7 +263,7 @@ function Productos() {
             ) : (
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-200 bg-slate-100 text-slate-600 text-xs font-bold uppercase tracking-wider">
+                  <tr className="sticky top-0 z-10 border-b border-slate-200 bg-slate-100 text-slate-600 text-xs font-bold uppercase">
                     <th className="py-4 px-6 w-24 text-center">SKU</th>
                     <th className="py-4 px-6 w-64">Nombre</th>
                     <th className="py-4 px-6">Descripcion</th>

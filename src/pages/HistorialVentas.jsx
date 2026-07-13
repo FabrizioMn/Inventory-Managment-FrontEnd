@@ -48,7 +48,7 @@ function HistorialVentas() {
     <section className="min-h-screen flex flex-col bg-slate-100">
       <header className="bg-white min-h-24 flex items-center px-8 shadow-md">
         <h1 className="text-3xl text-[#3d4946] font-medium tracking-tight">
-          Historial de vental
+          Historial de ventas
         </h1>
       </header>
 

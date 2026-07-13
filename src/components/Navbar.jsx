@@ -18,7 +18,7 @@ function Navbar() {
               }`
             }
           >
-            Dashboard
+            Inicio
           </NavLink>
         </li>
         <li>
@@ -46,7 +46,7 @@ function Navbar() {
               }`
             }
           >
-            Productos
+            Inventario
           </NavLink>
         </li>
         <li>
@@ -74,7 +74,7 @@ function Navbar() {
               }`
             }
           >
-            Punto de Venta
+            Nueva Venta
           </NavLink>
         </li>
         <li>
@@ -88,12 +88,12 @@ function Navbar() {
               }`
             }
           >
-            Historial de Ventas
+            Registro de Ventas
           </NavLink>
         </li>
         <li>
           <NavLink
-            to="/movimientos"
+            to="/abastecimiento"
             className={({ isActive }) =>
               `flex px-5 py-3 text-lg rounded-lg font-medium hover:bg-white/40 ${
                 isActive
@@ -102,7 +102,21 @@ function Navbar() {
               }`
             }
           >
-            Movimientos
+            Registrar Stock
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/historial-abastecimientos"
+            className={({ isActive }) =>
+              `flex px-5 py-3 text-lg rounded-lg font-medium hover:bg-white/40 ${
+                isActive
+                  ? "bg-white text-black font-bold shadow-md"
+                  : "text-slate-100 font-normal"
+              }`
+            }
+          >
+            Movimientos de Stock
           </NavLink>
         </li>
       </ul>
