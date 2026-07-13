@@ -9,9 +9,10 @@ function Ventas() {
   const [listaCategorias, setListaCategorias] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [carrito, setCarrito] = useState([]);
-  const [idUsuarioActual, setIdUsuarioActual] = useState(1);
+  const [idUsuarioActual] = useState(1);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [recargarDatos, setRecargarDatos] = useState(0);
 
   const obtenerNombreCategoria = (id) => {
     const resultado = listaCategorias.find(
@@ -25,6 +26,7 @@ function Ventas() {
 
     async function inciarCarga() {
       try {
+        if (recargarDatos > 0) setLoading(true);
         const dataCategoria = await categoriaService.getAll();
         const dataProductos = await productoService.getAll();
         if (activo) {
@@ -44,7 +46,7 @@ function Ventas() {
     return () => {
       activo = false;
     };
-  }, []);
+  }, [recargarDatos]);
 
   const listaFiltrada = listaProductos.filter((prod) => {
     const palabra = busqueda.toLowerCase().trim();
@@ -114,6 +116,15 @@ function Ventas() {
       })),
     };
 
+    Swal.fire({
+      title: "Procesando venta...",
+      text: "Guardando la transacción y rebajando inventario.",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
     try {
       await transaccionService.registrarVenta(payloadVenta);
       Swal.fire({
@@ -123,6 +134,7 @@ function Ventas() {
         confirmButtonColor: "#008674",
       });
       setCarrito([]);
+      setRecargarDatos((prev) => prev + 1);
     } catch (e) {
       Swal.fire({
         icon: "error",
@@ -137,6 +149,11 @@ function Ventas() {
 
   const subtotal = carrito.reduce(
     (acc, item) => acc + item.precio_unitario * item.cantidad,
+    0,
+  );
+
+  const totalItemsCarrito = carrito.reduce(
+    (acc, item) => acc + item.cantidad,
     0,
   );
   const total = subtotal;
@@ -176,10 +193,20 @@ function Ventas() {
           </div>
 
           {/*Catalogo de Productos*/}
+
           <div className="flex flex-col gap-3 max-h-[60vh] overflow-y-auto pr-1 custom-scrollbar">
-            {listaFiltrada.length === 0 ? (
-              <div className="p-8 text-center text-slate-400 italic text-sm">
-                No se encontraron productos para la busqueda
+            {loading ? (
+              <div className="p-12 text-center text-slate-500 font-medium bg-white rounded-xl shadow-sm border border-slate-200">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#008674] mx-auto mb-3"></div>
+                Sincronizando catálogo y stock...
+              </div>
+            ) : error ? (
+              <div className="p-10 text-center text-red-500 font-medium bg-white rounded-xl shadow-sm border border-red-100">
+                {error}
+              </div>
+            ) : listaFiltrada.length === 0 ? (
+              <div className="p-8 text-center text-slate-400 italic text-sm bg-white rounded-xl border border-slate-200">
+                No se encontraron productos para la búsqueda
               </div>
             ) : (
               listaFiltrada.map((prod) => (
@@ -198,6 +225,14 @@ function Ventas() {
                       {obtenerNombreCategoria(prod.id_categoria)}
                     </span>
                   </div>
+                  <div className="text-right min-w-20 ">
+                    <span className="text-xs text-slate-400 block font-medium">
+                      Stock
+                    </span>
+                    <span className="font-bold text-md text-slate-900 tracking-tight">
+                      {prod.stock}
+                    </span>
+                  </div>
                   <div className="text-right min-w-20">
                     <span className="text-xs text-slate-400 block font-medium">
                       Precio
@@ -206,6 +241,7 @@ function Ventas() {
                       S/ {parseFloat(prod.precio).toFixed(2)}
                     </span>
                   </div>
+
                   <button
                     className="bg-[#008674]/10 hover:bg-[#008674] text-[#008674] hover:text-white p-2.5 rounded-xl transition-all duration-200 active:scale-95 cursor-pointer flex items-center justify-center shadow-sm"
                     title="Agregar a la venta"
@@ -254,7 +290,7 @@ function Ventas() {
               Detalle de Venta
             </h2>
             <span className="text-xs font-bold bg-[#008674]/10 text-[#008674] px-2.5 py-1 rounded-full">
-              0 items
+              {totalItemsCarrito} items
             </span>
           </div>
 
