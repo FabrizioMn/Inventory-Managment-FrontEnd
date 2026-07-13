@@ -153,7 +153,7 @@ function Productos() {
         </h1>
       </header>
 
-      <main className="flex-1">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-6">
         <div className=" bg-white mx-auto max-w-7xl p-6 mt-6 rounded-xl border border-slate-200 shadow-md">
           <form className="flex flex-col gap-4 items-end" onSubmit={handleForm}>
             <div className="w-full flex gap-4">
