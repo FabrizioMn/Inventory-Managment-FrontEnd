@@ -1,6 +1,7 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function Navbar() {
+  const navigate = useNavigate();
   return (
     <nav className="fixed top-0 left-0 h-screen w-80 flex flex-col  bg-[#008674] text-slate-100">
       <div className="px-6 py-8 text-center w-full shrink-0">
@@ -136,8 +137,10 @@ function Navbar() {
       <div className="p-4 bg-teal-950/20 shrink-0 w-full">
         <button
           onClick={() => {
-            localStorage.clear();
-            window.location.href = "/login";
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+
+            navigate("/login");
           }}
           className="cursor-pointer flex px-4 py-2.5 text-sm rounded-lg font-medium hover:bg-white/40 w-full"
         >
