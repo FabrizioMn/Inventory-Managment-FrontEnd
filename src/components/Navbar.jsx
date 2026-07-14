@@ -119,6 +119,17 @@ function Navbar() {
             Movimientos de Stock
           </NavLink>
         </li>
+        <li>
+          <button
+            onClick={() => {
+              localStorage.clear();
+              window.location.href = "/login";
+            }}
+            className="flex w-full px-5 py-3 text-lg font-medium rounded-lg text-red-200 hover:bg-red-900/30 text-left cursor-pointer transition-colors mt-8"
+          >
+            Cerrar Sesión
+          </button>
+        </li>
       </ul>
     </nav>
   );

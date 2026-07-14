@@ -9,6 +9,7 @@ function Categorias() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [recargarDatos, setRecargarDatos] = useState(0);
+  const [busqueda, setBusqueda] = useState("");
 
   useEffect(() => {
     let activo = true;
@@ -127,6 +128,15 @@ function Categorias() {
 
   const categoriasActivas = categorias.filter((cat) => cat.activo);
 
+  const listaFiltrada = categoriasActivas.filter((cat) => {
+    const palabra = busqueda.toLowerCase().trim();
+
+    if (!palabra) return true;
+    const coincideNombre = cat.nombre.toLowerCase().includes(palabra);
+
+    return coincideNombre;
+  });
+
   return (
     <section className="min-h-screen flex flex-col bg-slate-100">
       <header className="bg-white min-h-24 flex items-center px-8 shadow-md">
@@ -178,13 +188,22 @@ function Categorias() {
             <h2 className="text-xl font-medium text-[#3d4946]">
               Listado de Categorias
             </h2>
+            <div className="w-full sm:max-w-xl">
+              <input
+                type="text"
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+                placeholder="Buscar por nombre"
+                className="w-full bg-slate-50 px-4 py-2.5 border border-[#bcc9c5] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00685d]/20 focus:border-[#00685d] transition-all"
+              />
+            </div>
             <span className="text-sm bg-[#008674]/10 text-[#008674] font-bold px-3 py-1 rounded-full">
-              {categoriasActivas.length} categorias
+              {listaFiltrada.length} categorias
             </span>
           </div>
 
           {/*TABLA*/}
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto max-h-100 overflow-y-auto custom-scrollbar">
             {loading ? (
               <div className="p-10 text-center text-slate-800 font-medium">
                 Cargando categorias...
@@ -193,14 +212,14 @@ function Categorias() {
               <div className="p-10 text-center text-red-500 font-medium">
                 {error}
               </div>
-            ) : categoriasActivas.length === 0 ? (
+            ) : listaFiltrada.length === 0 ? (
               <div className="p-10 text-center text-slate-800 italic">
-                No hay categorias registradas
+                No hay categoria registrada
               </div>
             ) : (
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-200 bg-slate-100 text-slate-600 text-xs font-bold uppercase tracking-wider">
+                  <tr className="sticky top-0 z-10 border-b border-slate-200 bg-slate-100 text-slate-600 text-xs font-bold uppercase">
                     <th className="py-4 px-6 w-24 text-center">ID</th>
                     <th className="py-4 px-6 w-64">Nombre</th>
                     <th className="py-4 px-6">Descripcion</th>
@@ -211,7 +230,7 @@ function Categorias() {
                   </tr>
                 </thead>
                 <tbody>
-                  {categoriasActivas.map((cat) => (
+                  {listaFiltrada.map((cat) => (
                     <tr
                       key={cat.id_categoria}
                       className="hover:bg-slate-50/80 transition-colors duration-150"
@@ -222,8 +241,8 @@ function Categorias() {
                       <td className="py-5 px-6 text-md text-black">
                         {cat.nombre}
                       </td>
-                      <td className="py-5 px-6 text-md text-black">
-                        {cat.descripcion}
+                      <td className="py-5 px-6 text-md text-black max-w-xs truncate">
+                        {cat.descripcion || "Sin descripcion"}
                       </td>
                       <td className="py-5 px-10 text-md text-black">
                         {new Date(cat.created_at).toLocaleDateString("es-ES", {
