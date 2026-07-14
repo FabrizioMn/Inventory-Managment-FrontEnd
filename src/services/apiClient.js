@@ -1,4 +1,6 @@
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+  ? "http://localhost:8080"
+  : "https://inventory-managment-pd9e.onrender.com";
 
 export async function apiClient(endpoint, options = {}) {
   const url = `${BASE_URL}${endpoint}`;
