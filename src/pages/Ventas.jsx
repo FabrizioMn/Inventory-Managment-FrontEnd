@@ -9,7 +9,6 @@ function Ventas() {
   const [listaCategorias, setListaCategorias] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [carrito, setCarrito] = useState([]);
-  const [idUsuarioActual] = useState(1);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [recargarDatos, setRecargarDatos] = useState(0);
@@ -108,6 +107,9 @@ function Ventas() {
       });
       return;
     }
+
+    const usuarioGuardado = JSON.parse(localStorage.getItem("usuario"));
+    const idUsuarioActual = usuarioGuardado?.id_usuario || 1;
 
     const payloadVenta = {
       id_usuario: idUsuarioActual,

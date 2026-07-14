@@ -7,7 +7,6 @@ import Swal from "sweetalert2";
 function Abastecimiento() {
   const [listaProductos, setListaProductos] = useState([]);
   const [listaProveedores, setListaProveedores] = useState([]);
-
   const [producto, setProducto] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [proveedor, setProveedor] = useState("");
@@ -109,13 +108,16 @@ function Abastecimiento() {
       },
     });
 
+    const usuarioGuardado = JSON.parse(localStorage.getItem("usuario"));
+    const idUsuarioActual = usuarioGuardado?.id_usuario || 1;
+
     try {
       const payload = {
         id_producto: prodEncontrado.id_producto,
         id_proveedor: parseInt(proveedor),
         cantidad: parseInt(cantidad),
         precio_compra: precioNumerico,
-        id_usuario: 1,
+        id_usuario: idUsuarioActual,
       };
 
       await transaccionService.registrarAbastecimiento(payload);
