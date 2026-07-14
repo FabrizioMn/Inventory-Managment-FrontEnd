@@ -61,6 +61,16 @@ function Ventas() {
   });
 
   const agregarAlCarrito = (prod) => {
+    if (parseInt(prod.stock) <= 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Producto agotado",
+        text: `"${prod.nombre}" no cuenta con stock disponible para la venta`,
+        confirmButtonColor: "#008674",
+      });
+      return;
+    }
+
     setCarrito((prevCarrito) => {
       const existe = prevCarrito.find(
         (item) => item.id_producto === prod.id_producto,
